@@ -35,8 +35,11 @@ class Payment(Base):
         nullable=True,
     )
     status: Mapped[PaymentStatus] = mapped_column(
-        Enum(PaymentStatus, name="payment_status",
-             values_callable=lambda enum_cls: [item.value for item in enum_cls],),
+        Enum(
+            PaymentStatus,
+            name="payment_status",
+            values_callable=lambda enum_cls: [item.value for item in enum_cls],
+        ),
         nullable=False,
         default=PaymentStatus.PENDING,
         server_default=PaymentStatus.PENDING.value,

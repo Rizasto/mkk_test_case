@@ -27,8 +27,11 @@ class Outbox(Base):
         nullable=False,
     )
     status: Mapped[OutboxStatus] = mapped_column(
-        Enum(OutboxStatus, name="outbox_status",
-             values_callable=lambda enum_cls: [item.value for item in enum_cls],),
+        Enum(
+            OutboxStatus,
+            name="outbox_status",
+            values_callable=lambda enum_cls: [item.value for item in enum_cls],
+        ),
         nullable=False,
         default=OutboxStatus.NEW,
         server_default=OutboxStatus.NEW.value,
