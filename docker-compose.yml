@@ -2,8 +2,10 @@ services:
   db:
     image: postgres:16
     container_name: db_container
+    ports:
+      - "5432:5432"
     env_file:
-      - .env
+      - local/.env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -22,10 +24,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: sh -c "alembic upgrade head &&
+         uvicorn app.main:app --host 0.0.0.0 --port 8000"
     container_name: app_container
     env_file:
-      - .env
+      - local/.env
     environment:
       DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       DB_HOST: db
@@ -54,7 +57,7 @@ services:
     command: python -m app.worker
     container_name: worker_container
     env_file:
-      - .env
+      - local/.env
     environment:
       DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       DB_HOST: db
@@ -80,7 +83,7 @@ services:
     ports:
       - "15672:15672"
     env_file:
-      - .env
+      - local/.env
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
