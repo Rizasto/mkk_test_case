@@ -25,7 +25,7 @@ jobs:
           pip install ruff pytest
 
       - name: Run linter
-        run: ruff check .app tests
+        run: ruff check app tests
 
       - name: Check formatting
         run: ruff format --check app tests
