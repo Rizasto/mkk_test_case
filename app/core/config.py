@@ -36,9 +36,7 @@ class Settings(BaseSettings):
     def async_database_url(self) -> str:
         if self.DATABASE_URL:
             return self.DATABASE_URL
-        return (
-            "postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"
-        ).format(
+        return ("postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}").format(
             user=self.DB_USER,
             password=self.DB_PASSWORD,
             host=self.DB_HOST,
@@ -48,9 +46,7 @@ class Settings(BaseSettings):
 
     @property
     def sync_database_url(self) -> str:
-        return (
-            "postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_name}"
-        ).format(
+        return ("postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_name}").format(
             user=self.DB_USER,
             password=self.DB_PASSWORD,
             host=self.DB_HOST,
