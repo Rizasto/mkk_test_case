@@ -7,8 +7,8 @@ settings = get_settings()
 
 async def main():
     print("Worker started")
-    print("RabbitMQ host: {0}".format(settings.RABBITMQ_HOST))
-    print("Database URL: {0}".format(settings.async_database_url))
+    print(f"RabbitMQ host: {settings.RABBITMQ_HOST}")
+    print(f"Database URL: {settings.async_database_url}")
 
     while True:
         print("Worker is alive")
