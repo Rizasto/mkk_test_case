@@ -11,7 +11,11 @@ router = APIRouter(prefix="/payments", tags=["payments"])
 
 
 def build_payment_response(payment: Payment) -> PaymentResponse:
-    return PaymentResponse(id=payment.id, status=payment.status, created_at=payment.created_at)
+    return PaymentResponse(
+        id=payment.id,
+        status=payment.status,
+        created_at=payment.created_at
+    )
 
 
 def build_payment_full_response(payment: Payment) -> PaymentFullResponse:
@@ -45,7 +49,7 @@ async def create_payment(
     return build_payment_response(payment)
 
 
-@router.get("/{payment_id}", response_model=PaymentFullResponse)
+@router.get("/{payment_id}", response_model=PaymentFullResponse, status_code=200)
 async def get_payment(
     payment_id: uuid.UUID,
     session: DbSessionDep,
