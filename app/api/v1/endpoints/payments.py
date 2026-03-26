@@ -1,20 +1,20 @@
 import uuid
-from typing import Any
 
 from fastapi import APIRouter
 
 from app.api.deps import ApiKeyDep, DbSessionDep, IdempotencyKeyDep
+from app.db.models.payment import Payment
 from app.schemas.payment import PaymentCreateRequest, PaymentFullResponse, PaymentResponse
 from app.services.payment import PaymentService
 
 router = APIRouter(prefix="/payments", tags=["payments"])
 
 
-def build_payment_response(payment: Any) -> PaymentResponse:
+def build_payment_response(payment: Payment) -> PaymentResponse:
     return PaymentResponse(id=payment.id, status=payment.status, created_at=payment.created_at)
 
 
-def build_payment_full_response(payment: Any) -> PaymentFullResponse:
+def build_payment_full_response(payment: Payment) -> PaymentFullResponse:
     return PaymentFullResponse(
         id=payment.id,
         amount=payment.amount,

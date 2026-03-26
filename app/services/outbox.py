@@ -1,3 +1,4 @@
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.broker.publisher import RabbitPublisher
@@ -23,10 +24,14 @@ class OutboxService:
                 await self.session.commit()
                 published_count += 1
             except Exception as exc:
-                await self.outbox_repository.mark_as_failed(
-                    outbox_event=outbox_event,
-                    error_message=str(exc),
-                )
-                await self.session.commit()
+                await self.session.rollback()
+                try:
+                    await self.outbox_repository.mark_as_failed(
+                        outbox_event=outbox_event,
+                        error_message=str(exc),
+                    )
+                    await self.session.commit()
+                except SQLAlchemyError:
+                    await self.session.rollback()
 
         return published_count

@@ -14,6 +14,10 @@ class WebhookDeliveryError(Exception):
 
 
 class WebhookService:
+    @staticmethod
+    def _get_backoff_delay(attempt: int) -> int:
+        return settings.BACKOFF_BASE_SECONDS**attempt
+
     async def send_payment_result(self, payment: Payment) -> None:
         payload: dict[str, Any] = {
             "payment_id": str(payment.id),
@@ -38,12 +42,12 @@ class WebhookService:
                     response.raise_for_status()
                     return
             except Exception as exc:
+                print(exc)
                 last_error_message = str(exc)
 
                 if attempt == settings.MAX_RETRIES:
                     break
 
-                delay = settings.BACKOFF_BASE_SECONDS**attempt
-                await asyncio.sleep(delay)
+                await asyncio.sleep(self._get_backoff_delay(attempt))
 
         raise WebhookDeliveryError(last_error_message)
