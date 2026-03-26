@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.enums import PaymentStatus
@@ -38,26 +39,51 @@ class PaymentService:
             webhook_url=str(payload.webhook_url),
         )
 
-        await self.payment_repository.add(payment)
-
         outbox_event = Outbox(
             event_type="payment.created",
             payload={
-                "payment_id": str(payment.id),
+                "payment_id": "",
                 "idempotency_key": idempotency_key,
                 "amount": str(payload.amount),
                 "currency": payload.currency.upper(),
                 "webhook_url": str(payload.webhook_url),
             },
         )
-        await self.outbox_repository.add(outbox_event)
+        try:
+            await self.payment_repository.add(payment)
+            outbox_event.payload["payment_id"] = str(payment.id)
+            await self.outbox_repository.add(outbox_event)
+            await self.session.commit()
+            await self.session.refresh(payment)
+        except IntegrityError:
+            await self.session.rollback()
 
-        await self.session.commit()
-        await self.session.refresh(payment)
+            existing_payment = await self.payment_repository.get_by_idempotency_key(
+                idempotency_key=idempotency_key,
+            )
+            if existing_payment is not None:
+                return existing_payment
+
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Payment with this idempotency key already exists",
+            )
+        except SQLAlchemyError:
+            await self.session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Database error while creating payment",
+            )
         return payment
 
     async def get_payment(self, payment_id: uuid.UUID) -> Payment:
-        payment = await self.payment_repository.get_by_id(payment_id=payment_id)
+        try:
+            payment = await self.payment_repository.get_by_id(payment_id=payment_id)
+        except SQLAlchemyError:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Database error while fetching payment",
+            )
         if payment is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

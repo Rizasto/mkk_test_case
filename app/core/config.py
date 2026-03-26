@@ -13,8 +13,14 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_USER: str
     DB_PASSWORD: str
-
     DATABASE_URL: str
+
+    TEST_DB_HOST: str
+    TEST_DB_NAME: str
+    TEST_DB_USER: str
+    TEST_DB_PASSWORD: str
+    TEST_DB_PORT: str
+    TEST_DATABASE_URL: str
 
     RABBITMQ_HOST: str
     RABBITMQ_PORT: int

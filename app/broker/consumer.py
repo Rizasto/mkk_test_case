@@ -25,3 +25,7 @@ async def handle_payment_created(event: PaymentCreatedEvent) -> None:
                 reason=str(exc),
             )
             await publisher.publish_payment_dlq(dlq_event)
+            print(
+                f"Webhook delivery failed permanently for payment_id={payment.id}. "
+                "Message sent to DLQ."
+            )
