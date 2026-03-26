@@ -2,6 +2,8 @@ import sys
 from collections.abc import AsyncGenerator
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
@@ -14,8 +16,6 @@ from app.core.config import get_settings
 from app.db.base import Base
 from app.db.session import get_session
 from app.main import app
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 SETTINGS = get_settings()
 TEST_DATABASE_URL = SETTINGS.TEST_DATABASE_URL

@@ -25,6 +25,8 @@ jobs:
           --health-retries=10
 
     env:
+      PYTHONPATH: ${{ github.workspace }}
+
       APP_NAME: payment-service
       APP_HOST: 0.0.0.0
       APP_PORT: 8000
