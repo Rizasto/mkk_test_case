@@ -18,9 +18,9 @@ class PaymentService:
         self.outbox_repository = OutboxRepository(session)
 
     async def create_payment(
-            self,
-            payload: PaymentCreateRequest,
-            idempotency_key: str,
+        self,
+        payload: PaymentCreateRequest,
+        idempotency_key: str,
     ) -> Payment:
         existing_payment = await self.payment_repository.get_by_idempotency_key(
             idempotency_key=idempotency_key,

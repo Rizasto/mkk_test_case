@@ -4,18 +4,14 @@ from typing import Any
 from fastapi import APIRouter
 
 from app.api.deps import ApiKeyDep, DbSessionDep, IdempotencyKeyDep
-from app.schemas.payment import PaymentCreateRequest, PaymentResponse, PaymentFullResponse
+from app.schemas.payment import PaymentCreateRequest, PaymentFullResponse, PaymentResponse
 from app.services.payment import PaymentService
 
 router = APIRouter(prefix="/payments", tags=["payments"])
 
 
 def build_payment_response(payment: Any) -> PaymentResponse:
-    return PaymentResponse(
-        id=payment.id,
-        status=payment.status,
-        created_at=payment.created_at
-    )
+    return PaymentResponse(id=payment.id, status=payment.status, created_at=payment.created_at)
 
 
 def build_payment_full_response(payment: Any) -> PaymentFullResponse:
@@ -30,16 +26,16 @@ def build_payment_full_response(payment: Any) -> PaymentFullResponse:
         webhook_url=payment.webhook_url,
         created_at=payment.created_at,
         updated_at=payment.updated_at,
-        processed_at=payment.processed_at
+        processed_at=payment.processed_at,
     )
 
 
 @router.post("", response_model=PaymentResponse, status_code=202)
 async def create_payment(
-        payload: PaymentCreateRequest,
-        session: DbSessionDep,
-        _: ApiKeyDep,
-        idempotency_key: IdempotencyKeyDep,
+    payload: PaymentCreateRequest,
+    session: DbSessionDep,
+    _: ApiKeyDep,
+    idempotency_key: IdempotencyKeyDep,
 ) -> PaymentResponse:
     service = PaymentService(session=session)
     payment = await service.create_payment(
@@ -51,9 +47,9 @@ async def create_payment(
 
 @router.get("/{payment_id}", response_model=PaymentFullResponse)
 async def get_payment(
-        payment_id: uuid.UUID,
-        session: DbSessionDep,
-        _: ApiKeyDep,
+    payment_id: uuid.UUID,
+    session: DbSessionDep,
+    _: ApiKeyDep,
 ) -> PaymentFullResponse:
     service = PaymentService(session=session)
     payment = await service.get_payment(payment_id=payment_id)
