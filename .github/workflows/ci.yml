@@ -31,11 +31,11 @@ jobs:
       APP_HOST: 0.0.0.0
       APP_PORT: 8000
 
-      DB_HOST: 127.0.0.1
-      DB_PORT: 5433
-      DB_NAME: payments
-      DB_USER: payments
-      DB_PASSWORD: payments
+      TEST_DB_HOST: 127.0.0.1
+      TEST_DB_PORT: 5433
+      TEST_DB_NAME: payments_test
+      TEST_DB_USER: payments
+      TEST_DB_PASSWORD: payments
 
       DATABASE_URL: postgresql+asyncpg://payments:payments@127.0.0.1:5433/payments
 
