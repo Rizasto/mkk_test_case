@@ -45,7 +45,7 @@ async def create_payment(
     return build_payment_response(payment)
 
 
-@router.get("/{payment_id}", response_model=PaymentFullResponse)
+@router.get("/{payment_id}", response_model=PaymentFullResponse, status_code=200)
 async def get_payment(
     payment_id: uuid.UUID,
     session: DbSessionDep,
