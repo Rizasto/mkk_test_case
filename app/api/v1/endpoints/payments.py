@@ -11,11 +11,7 @@ router = APIRouter(prefix="/payments", tags=["payments"])
 
 
 def build_payment_response(payment: Payment) -> PaymentResponse:
-    return PaymentResponse(
-        id=payment.id,
-        status=payment.status,
-        created_at=payment.created_at
-    )
+    return PaymentResponse(id=payment.id, status=payment.status, created_at=payment.created_at)
 
 
 def build_payment_full_response(payment: Payment) -> PaymentFullResponse:
