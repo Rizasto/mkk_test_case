@@ -37,6 +37,12 @@ jobs:
       TEST_DB_USER: payments
       TEST_DB_PASSWORD: payments
 
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5433
+      DB_NAME: payments_test
+      DB_USER: payments
+      DB_PASSWORD: payments
+
       DATABASE_URL: postgresql+asyncpg://payments:payments@127.0.0.1:5433/payments
 
       RABBITMQ_HOST: 127.0.0.1
