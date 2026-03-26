@@ -1,8 +1,10 @@
 import uuid
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.enums import PaymentStatus
 from app.db.models.payment import Payment
 
 
@@ -22,5 +24,15 @@ class PaymentRepository:
 
     async def add(self, payment: Payment) -> Payment:
         self.session.add(payment)
+        await self.session.flush()
+        return payment
+
+    async def update_status(
+        self,
+        payment: Payment,
+        status: PaymentStatus,
+    ) -> Payment:
+        payment.status = status
+        payment.processed_at = datetime.now(UTC)
         await self.session.flush()
         return payment
